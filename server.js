@@ -13,6 +13,54 @@ require('dotenv').config();
 const express    = require('express');
 const nodemailer = require('nodemailer');
 const path       = require('path');
+const crypto     = require('crypto');
+
+/* ---------- Captcha store ---------- */
+// token -> { text: string, expires: number }
+const captchaStore = new Map();
+
+function generateCaptchaText() {
+    const chars = 'abdefghjkmnpqrstuvwxyz23456789';
+    let text = '';
+    for (let i = 0; i < 4; i++) {
+        text += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return text;
+}
+
+function generateCaptchaSvg(text) {
+    const W = 110, H = 46;
+    let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+    s += `<rect width="${W}" height="${H}" fill="#f3f3f3" rx="4"/>`;
+    // шумовые линии
+    for (let i = 0; i < 5; i++) {
+        const rnd = () => (Math.random() * 1000 | 0) / 10;
+        s += `<line x1="${rnd()%W}" y1="${rnd()%H}" x2="${rnd()%W}" y2="${rnd()%H}" stroke="#d0d0d0" stroke-width="1.2"/>`;
+    }
+    // шумовые точки
+    for (let i = 0; i < 18; i++) {
+        s += `<circle cx="${(Math.random()*W).toFixed(1)}" cy="${(Math.random()*H).toFixed(1)}" r="1.2" fill="#c8c8c8"/>`;
+    }
+    // символы
+    const palette = ['#222', '#333', '#1a1a1a', '#444'];
+    text.split('').forEach((ch, i) => {
+        const x    = 12 + i * 24;
+        const y    = 30 + ((Math.random() * 10 - 5) | 0);
+        const rot  = ((Math.random() * 28 - 14) | 0);
+        const size = 20 + ((Math.random() * 5) | 0);
+        const col  = palette[i % palette.length];
+        s += `<text x="${x}" y="${y}" font-family="'Courier New',Courier,monospace" font-size="${size}" font-weight="bold" fill="${col}" transform="rotate(${rot} ${x} ${y})">${ch}</text>`;
+    });
+    s += '</svg>';
+    return s;
+}
+
+function cleanCaptchaStore() {
+    const now = Date.now();
+    for (const [k, v] of captchaStore.entries()) {
+        if (v.expires < now) captchaStore.delete(k);
+    }
+}
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -273,7 +321,18 @@ function isNotEmpty(val) {
  *   2. Клиенту  — подтверждение с условиями акции
  */
 app.post('/api/send-order', async function (req, res) {
-    const { name, email, tariff, message } = req.body;
+    const { name, email, tariff, message, captchaToken, captcha } = req.body;
+
+    // Валидация капчи
+    const captchaEntry = captchaStore.get(captchaToken);
+    if (!captchaEntry || Date.now() > captchaEntry.expires) {
+        return res.status(400).json({ success: false, error: 'Срок действия капчи истёк. Обновите картинку.', captchaExpired: true });
+    }
+    if (!captcha || captcha.trim().toLowerCase() !== captchaEntry.text) {
+        captchaStore.delete(captchaToken);
+        return res.status(400).json({ success: false, error: 'Неверный код с картинки', captchaWrong: true });
+    }
+    captchaStore.delete(captchaToken); // одноразовое использование
 
     // Валидация обязательных полей
     if (!isNotEmpty(name)) {
@@ -346,6 +405,24 @@ app.post('/api/subscribe', async function (req, res) {
         console.error('[SUBSCRIBE] Ошибка:', err.message);
         return res.status(500).json({ success: false, error: 'Ошибка отправки' });
     }
+});
+
+/**
+ * GET /captcha?s=<token>
+ * Генерирует SVG-картинку капчи и сохраняет ответ в памяти.
+ */
+app.get('/captcha', function (req, res) {
+    const s = req.query.s;
+    if (typeof s !== 'string' || !s || s.length > 200) {
+        return res.status(400).end();
+    }
+    cleanCaptchaStore();
+    const text = generateCaptchaText();
+    const svg  = generateCaptchaSvg(text);
+    captchaStore.set(s, { text: text.toLowerCase(), expires: Date.now() + 10 * 60 * 1000 });
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.send(svg);
 });
 
 /* Все остальные GET-запросы отдают index.html */

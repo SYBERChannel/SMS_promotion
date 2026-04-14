@@ -93,6 +93,28 @@
         }
     }
 
+    /* ---- Captcha ---- */
+    function initCaptcha() {
+        const img        = document.getElementById('captchaImg');
+        const tokenInput = document.getElementById('captchaToken');
+        if (!img || !tokenInput) return;
+        const s = Math.random().toString() + Date.now();
+        tokenInput.value = s;
+        img.src = '/captcha?s=' + encodeURIComponent(s);
+    }
+
+    initCaptcha();
+
+    var captchaRefreshBtn = document.getElementById('captchaRefresh');
+    if (captchaRefreshBtn) {
+        captchaRefreshBtn.addEventListener('click', function () {
+            initCaptcha();
+            var captchaInputEl = document.getElementById('captchaInput');
+            if (captchaInputEl) captchaInputEl.value = '';
+            clearError('captchaInput', 'captchaError');
+        });
+    }
+
     /* ---- Order form submit ---- */
     const orderForm   = document.getElementById('orderForm');
     const submitBtn   = document.getElementById('submitBtn');
@@ -132,6 +154,14 @@
                 valid = false;
             }
 
+            // Captcha
+            var captchaInputEl = document.getElementById('captchaInput');
+            clearError('captchaInput', 'captchaError');
+            if (!captchaInputEl || !captchaInputEl.value.trim()) {
+                showError('captchaInput', 'captchaError', 'Введите код с картинки');
+                valid = false;
+            }
+
             // Agree
             clearError('agree', 'agreeError');
             if (!agree || !agree.checked) {
@@ -154,11 +184,14 @@
             }
 
             // Collect form data
+            var captchaTokenEl = document.getElementById('captchaToken');
             const formData = {
-                name:    name.value.trim(),
-                email:   email.value.trim(),
-                tariff:  (document.getElementById('tariff')   || {}).value  || '',
-                message: (document.getElementById('message')  || {}).value  || ''
+                name:         name.value.trim(),
+                email:        email.value.trim(),
+                tariff:       (document.getElementById('tariff')  || {}).value || '',
+                message:      (document.getElementById('message') || {}).value || '',
+                captchaToken: captchaTokenEl ? captchaTokenEl.value : '',
+                captcha:      captchaInputEl ? captchaInputEl.value.trim() : ''
             };
 
             // Show loading state
@@ -181,8 +214,14 @@
                     orderForm.querySelectorAll('input, select, textarea').forEach(function (el) {
                         el.value = '';
                     });
+                    initCaptcha();
                     if (successMsg) successMsg.style.display = 'block';
                     successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else if (result.data && (result.data.captchaWrong || result.data.captchaExpired)) {
+                    initCaptcha();
+                    var captchaInputEl2 = document.getElementById('captchaInput');
+                    if (captchaInputEl2) captchaInputEl2.value = '';
+                    showError('captchaInput', 'captchaError', result.data.error || 'Неверный код с картинки');
                 } else {
                     if (failureMsg) failureMsg.style.display = 'block';
                 }
