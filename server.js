@@ -118,16 +118,14 @@ function buildOperatorEmail(data) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.08);max-width:600px;width:100%;">
 
-        <!-- Header -->
         <tr>
           <td style="background:#FF4F12;padding:24px 32px;">
-            <div style="color:#ffffff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:6px;">SMS Промо</div>
+            <div style="color:#ffffff;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:6px;">Миранда</div>
             <div style="color:#ffffff;font-size:22px;font-weight:800;line-height:1.2;">Новая заявка на подключение</div>
             <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-top:6px;">${now} МСК</div>
           </td>
         </tr>
 
-        <!-- Body -->
         <tr>
           <td style="padding:32px;">
             <p style="margin:0 0 24px;font-size:15px;color:#555;">
@@ -160,17 +158,16 @@ function buildOperatorEmail(data) {
 
             <div style="margin-top:28px;padding:16px 20px;background:#e8f5e9;border-radius:8px;border-left:4px solid #4caf50;">
               <p style="margin:0;font-size:14px;color:#2e7d32;font-weight:600;">
-                ✓ Свяжитесь с клиентом как можно скорее — заявки обрабатываются в течение рабочего дня
+                Свяжитесь с клиентом как можно скорее — заявки обрабатываются в течение рабочего дня
               </p>
             </div>
           </td>
         </tr>
 
-        <!-- Footer -->
         <tr>
           <td style="padding:20px 32px;border-top:1px solid #eee;background:#fafafa;">
             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
-              Это автоматическое письмо с сайта SMS Промо. Не отвечайте на него.
+              Это автоматическое письмо с сайта Миранда. Не отвечайте на него.
             </p>
           </td>
         </tr>
@@ -200,16 +197,14 @@ function buildClientEmail(data) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.08);max-width:600px;width:100%;">
 
-        <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#FF4F12 0%,#ff7043 100%);padding:36px 32px;text-align:center;">
-            <div style="color:#ffffff;font-size:42px;margin-bottom:12px;">✉</div>
+            <div style="color:#ffffff;font-size:42px;margin-bottom:12px;">&#10003;</div>
             <div style="color:#ffffff;font-size:24px;font-weight:800;line-height:1.2;margin-bottom:8px;">Ваша заявка принята!</div>
             <div style="color:rgba(255,255,255,0.85);font-size:15px;">Мы свяжемся с вами в течение рабочего дня</div>
           </td>
         </tr>
 
-        <!-- Greeting -->
         <tr>
           <td style="padding:32px 32px 0;">
             <p style="margin:0 0 16px;font-size:16px;color:#333;line-height:1.65;">
@@ -223,9 +218,8 @@ function buildClientEmail(data) {
           </td>
         </tr>
 
-        <!-- Order summary -->
         <tr>
-          <td style="padding:20px 32px;">
+          <td style="padding:20px 32px 32px;">
             <div style="background:#fff3ee;border-radius:10px;padding:20px 24px;border-left:4px solid #FF4F12;">
               <div style="font-size:13px;font-weight:700;color:#FF4F12;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Ваша заявка</div>
               <table width="100%" cellpadding="0" cellspacing="0">
@@ -242,38 +236,21 @@ function buildClientEmail(data) {
           </td>
         </tr>
 
-        <!-- Promo conditions -->
-        <tr>
-          <td style="padding:0 32px 28px;">
-            <div style="background:#f8f8f8;border-radius:10px;padding:20px 24px;">
-              <div style="font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:14px;">🔥 Условия акции, на которую вы откликнулись:</div>
-              <ul style="margin:0;padding-left:20px;font-size:14px;color:#555;line-height:1.8;">
-                <li>Скидка <strong>100 ₽/мес.</strong> на первые <strong>6 месяцев</strong></li>
-                <li>Для тарифа «SMS Про» — двойной пакет (10 000 SMS) на 6 мес.</li>
-                <li>Остатки пакета переносятся на следующий месяц</li>
-                <li>Подключение в течение одного рабочего дня</li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-
-        <!-- CTA -->
         <tr>
           <td style="padding:0 32px 32px;text-align:center;">
             <p style="margin:0 0 20px;font-size:14px;color:#888;">Если у вас есть вопросы — позвоните нам:</p>
-            <a href="tel:+78001234567" style="display:inline-block;background:#FF4F12;color:#ffffff;font-size:16px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;">
-              📞 +7 (800) 123-45-67
+            <a href="tel:+79790003330" style="display:inline-block;background:#FF4F12;color:#ffffff;font-size:16px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;">
+              +7 (979) 000-33-30
             </a>
-            <p style="margin:16px 0 0;font-size:13px;color:#bbb;">Звонок бесплатный по России</p>
+            <p style="margin:16px 0 0;font-size:13px;color:#bbb;">Или по короткому номеру 3330 (бесплатно для абонентов Миранды)</p>
           </td>
         </tr>
 
-        <!-- Footer -->
         <tr>
           <td style="padding:20px 32px;border-top:1px solid #eee;background:#fafafa;">
             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;line-height:1.6;">
               Это автоматическое письмо-подтверждение. Не отвечайте на него.<br>
-              © ООО «СМС Промо», 2026 &nbsp;|&nbsp; <a href="mailto:info@smspromo.ru" style="color:#FF4F12;">info@smspromo.ru</a>
+              © ООО «Миранда-медиа», 2026
             </p>
           </td>
         </tr>
@@ -352,17 +329,17 @@ app.post('/api/send-order', async function (req, res) {
     try {
         // 1. Письмо оператору
         await transporter.sendMail({
-            from:    `"SMS Промо (сайт)" <${process.env.SMTP_USER}>`,
+            from:    `"Миранда (сайт)" <${process.env.SMTP_USER}>`,
             to:      process.env.OPERATOR_EMAIL,
-            subject: `[SMS Промо] Новая заявка от ${data.name} — тариф: ${data.tariff || 'не выбран'}`,
+            subject: `[Миранда] Новая заявка от ${data.name} — тариф: ${data.tariff || 'не выбран'}`,
             html:    buildOperatorEmail(data)
         });
 
         // 2. Письмо клиенту
         await transporter.sendMail({
-            from:    `"SMS Промо" <${process.env.SMTP_USER}>`,
+            from:    `"Миранда" <${process.env.SMTP_USER}>`,
             to:      data.email,
-            subject: 'Ваша заявка принята — SMS Промо',
+            subject: 'Ваша заявка принята — Миранда',
             html:    buildClientEmail(data)
         });
 
@@ -389,9 +366,9 @@ app.post('/api/subscribe', async function (req, res) {
     try {
         // Уведомление оператору
         await transporter.sendMail({
-            from:    `"SMS Промо (подписка)" <${process.env.SMTP_USER}>`,
+            from:    `"Миранда (подписка)" <${process.env.SMTP_USER}>`,
             to:      process.env.OPERATOR_EMAIL,
-            subject: `[SMS Промо] Новая подписка на новости: ${email.trim()}`,
+            subject: `[Миранда] Новая подписка на новости: ${email.trim()}`,
             html: `
               <p>Новый подписчик: <strong>${escapeHtml(email.trim())}</strong></p>
               <p style="color:#888;font-size:12px;">Дата: ${new Date().toLocaleString('ru-RU')}</p>
