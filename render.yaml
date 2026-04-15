@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: sms-promo
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_REJECT_UNAUTHORIZED
+        sync: false
+      - key: OPERATOR_EMAIL
+        sync: false
