@@ -11,11 +11,9 @@
 require('dotenv').config();
 
 const express    = require('express');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const path       = require('path');
 const crypto     = require('crypto');
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* ---------- Captcha store ---------- */
 // token -> { text: string, expires: number }
@@ -74,13 +72,26 @@ app.use(express.urlencoded({ extended: true }));
 // Отдаём статику (index.html, style.css, script.js)
 app.use(express.static(path.join(__dirname)));
 
-/* ---------- Resend Email Service ---------- */
-// Проверка API ключа при старте
-if (!process.env.RESEND_API_KEY) {
-    console.error('[RESEND] Ошибка: RESEND_API_KEY не установлен в .env');
-} else {
-    console.log('[RESEND] API ключ загружен успешно');
-}
+/* ---------- SMTP Transporter (Resend) ---------- */
+const transporter = nodemailer.createTransport({
+    host:   'smtp.resend.com',
+    port:   465,
+    secure: true,
+    auth: {
+        user: 'resend',
+        pass: process.env.RESEND_API_KEY
+    }
+});
+
+/* Проверка SMTP при старте */
+transporter.verify(function (err) {
+    if (err) {
+        console.error('[RESEND] Ошибка подключения:', err.message);
+        console.error('       Проверьте RESEND_API_KEY в файле .env');
+    } else {
+        console.log('[RESEND] Подключение успешно установлено');
+    }
+});
 
 /* ---------- Helpers ---------- */
 
@@ -314,7 +325,7 @@ app.post('/api/send-order', async function (req, res) {
 
     try {
         // 1. Письмо оператору
-        await resend.emails.send({
+        await transporter.sendMail({
             from:    'Миранда <onboarding@resend.dev>',
             to:      process.env.OPERATOR_EMAIL,
             subject: `[Миранда] Новая заявка от ${data.name} — тариф: ${data.tariff || 'не выбран'}`,
@@ -322,7 +333,7 @@ app.post('/api/send-order', async function (req, res) {
         });
 
         // 2. Письмо клиенту
-        await resend.emails.send({
+        await transporter.sendMail({
             from:    'Миранда <onboarding@resend.dev>',
             to:      data.email,
             subject: 'Ваша заявка принята — Миранда',
@@ -351,7 +362,7 @@ app.post('/api/subscribe', async function (req, res) {
 
     try {
         // Уведомление оператору
-        await resend.emails.send({
+        await transporter.sendMail({
             from:    'Миранда <onboarding@resend.dev>',
             to:      process.env.OPERATOR_EMAIL,
             subject: `[Миранда] Новая подписка на новости: ${email.trim()}`,
