@@ -11,9 +11,11 @@
 require('dotenv').config();
 
 const express    = require('express');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const path       = require('path');
 const crypto     = require('crypto');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* ---------- Captcha store ---------- */
 // token -> { text: string, expires: number }
@@ -72,29 +74,13 @@ app.use(express.urlencoded({ extended: true }));
 // Отдаём статику (index.html, style.css, script.js)
 app.use(express.static(path.join(__dirname)));
 
-/* ---------- SMTP Transporter ---------- */
-const transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST,
-    port:   parseInt(process.env.SMTP_PORT) || 465,
-    secure: process.env.SMTP_SECURE !== 'false', // true = TLS/SSL (порт 465), false = STARTTLS (порт 587)
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    },
-    tls: {
-        rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false'
-    }
-});
-
-/* Проверка SMTP при старте */
-transporter.verify(function (err) {
-    if (err) {
-        console.error('[SMTP] Ошибка подключения:', err.message);
-        console.error('       Проверьте настройки в файле .env');
-    } else {
-        console.log('[SMTP] Подключение успешно установлено');
-    }
-});
+/* ---------- Resend Email Service ---------- */
+// Проверка API ключа при старте
+if (!process.env.RESEND_API_KEY) {
+    console.error('[RESEND] Ошибка: RESEND_API_KEY не установлен в .env');
+} else {
+    console.log('[RESEND] API ключ загружен успешно');
+}
 
 /* ---------- Helpers ---------- */
 
@@ -328,16 +314,16 @@ app.post('/api/send-order', async function (req, res) {
 
     try {
         // 1. Письмо оператору
-        await transporter.sendMail({
-            from:    `"Миранда (сайт)" <${process.env.SMTP_USER}>`,
+        await resend.emails.send({
+            from:    'Миранда <onboarding@resend.dev>',
             to:      process.env.OPERATOR_EMAIL,
             subject: `[Миранда] Новая заявка от ${data.name} — тариф: ${data.tariff || 'не выбран'}`,
             html:    buildOperatorEmail(data)
         });
 
         // 2. Письмо клиенту
-        await transporter.sendMail({
-            from:    `"Миранда" <${process.env.SMTP_USER}>`,
+        await resend.emails.send({
+            from:    'Миранда <onboarding@resend.dev>',
             to:      data.email,
             subject: 'Ваша заявка принята — Миранда',
             html:    buildClientEmail(data)
@@ -365,8 +351,8 @@ app.post('/api/subscribe', async function (req, res) {
 
     try {
         // Уведомление оператору
-        await transporter.sendMail({
-            from:    `"Миранда (подписка)" <${process.env.SMTP_USER}>`,
+        await resend.emails.send({
+            from:    'Миранда <onboarding@resend.dev>',
             to:      process.env.OPERATOR_EMAIL,
             subject: `[Миранда] Новая подписка на новости: ${email.trim()}`,
             html: `
